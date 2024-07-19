@@ -4,10 +4,9 @@ from .forms import CreateUserForm, LoginForm, UserUpdateForm, ProfileUpdateForm
 
 from django.contrib.auth.decorators import login_required
 
-from .models import Profile, SearchInfo
+from .models import Profile
 
 from django.db.models import Q
-
 
 # - Authentication models and functions
  
@@ -134,18 +133,37 @@ def profile(request, user_id=None):
 #
 def search_view(request):
     query = request.GET.get('query', '')
-    results = SearchInfo.objects.all()
+    filter_type = request.GET.get('filter_type', 'everything')
 
-    if query:
-        results = results.filter(
-            Q(name__icontains=query) |
-            Q(school__icontains=query) |
-            Q(age=query)
-        )
+    if not query:
+        users = User.objects.none()
+        #return redirect("")
+    else:
+        users = User.objects.all()
+
+        
+        if query:  # Nếu không có filter_type nhưng có query, tìm kiếm mọi thứ
+            user_profiles = Profile.objects.filter(
+                Q(user__username__icontains=query) |
+                Q(school__icontains=query) |
+                Q(age__icontains=query)
+            )
+            users = users.filter(id__in=user_profiles.values('user_id'))
+        else:
+            if filter_type == 'username' and query:
+                users = users.filter(username__icontains=query)
+            elif filter_type == 'school' and query:
+                user_profiles = Profile.objects.filter(school__icontains=query)
+                users = users.filter(id__in=user_profiles.values('user_id'))
+            elif filter_type == 'age' and query:
+                user_profiles = Profile.objects.filter(age=query)
+                users = users.filter(id__in=user_profiles.values('user_id'))
+            
 
     context = {
-        'results': results,
+        'users': users,
         'query': query,
+        'filter_type': filter_type
     }
     
-    return render(request, 'search_results.html', context=context)
+    return render(request, 'g4l/search.html', context=context)

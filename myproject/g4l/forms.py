@@ -6,7 +6,6 @@ from django.forms.widgets import PasswordInput, TextInput, NumberInput
 
 from django import forms
  
-
 from .models import Profile
 
 
