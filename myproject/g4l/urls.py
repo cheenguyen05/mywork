@@ -20,4 +20,14 @@ urlpatterns = [
 
     path('search', views.search_view, name='search'),
 
+    path('schedule', views.schedule_list, name='schedule_list'),
+
+    #path('schedule/<int:pk>/', views.schedule_detail, name='schedule_detail'),
+
+    path('schedule/new/', views.schedule_create, name='schedule_create'),
+
+    path('schedule/<int:pk>/delete/', views.schedule_delete, name='schedule_delete'),
+
+    path('create_todolist/<int:schedule_id>/', views.create_todolist, name='create_todolist'),
+
 ]

@@ -6,7 +6,7 @@ from django.forms.widgets import PasswordInput, TextInput, NumberInput
 
 from django import forms
  
-from .models import Profile
+from .models import Profile, Schedule, TodoList
 
 
 # - Create/Register a user (Model Form)
@@ -46,4 +46,16 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['school', 'age']
+
+class ScheduleForm(forms.ModelForm):
+    class Meta:
+        model = Schedule
+        fields = ['titles', 'start_date', 'end_date', 'description']
+
+class TodoListForm(forms.ModelForm):
+    class Meta:
+        model = TodoList
+        fields = ['titles','start_time', 'end_time', 'job_type']
+
+    
 

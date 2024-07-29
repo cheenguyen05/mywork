@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Profile</title>
+  <title>Your Schedules</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
@@ -12,10 +12,11 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      background:#F0F8FF
     }
 
     .navbar {
-      background-color: #eabd75;
+      background-color: #8db5fb;
       padding: 17px 0;
       position: none;
       width: 100%;
@@ -31,7 +32,7 @@
     }
 
     .navbar a:hover {
-      background-color: #935526;
+      background-color: #2b63c4;
       border-radius: 5px;
       color: #fff;
     }
@@ -58,7 +59,7 @@
     }
 
     .custom-search-button {
-      background-color: #935526; /* Background color */
+      background-color: #2b63c4; /* Background color */
       color: white; /* Text color */
       border: none; /* Remove border */
       border-radius: 3px; /* Border radius */
@@ -67,7 +68,7 @@
     }
 
     .custom-search-button:hover {
-      background-color: #f9e5c5; /* Background color on hover */
+      background-color: #4388ff; /* Background color on hover */
       color: #000; /* Text color on hover */
     }
 
@@ -75,7 +76,7 @@
       position: relative;
       width: 160px;
       border-radius: 3px;
-      background-color: #935526;
+      background-color: #2b63c4;
       cursor: pointer;
     }
 
@@ -88,7 +89,7 @@
     }
 
     .dropdown-text:hover {
-      background-color: #f9e5c5;
+      background-color: #4388ff;
       color: #000;
       border-radius: 3px;
     }
@@ -117,12 +118,11 @@
     .dropdown-list-item:hover {
       margin-left: 0.5rem;
     }
-
     .profile-dropdown {
       position: relative;
       width: fit-content;
       border-radius: 20px;
-      background-color: #935526;
+      background-color: #2b63c4;
       cursor: pointer;
       margin-left: 30px; /* Added margin for better spacing */
     }
@@ -152,7 +152,7 @@
     }
 
     .profile-dropdown-text:hover {
-      background-color: #f9e5c5;
+      background-color: #4388ff;
       color: #000;
       border-radius: 20px;
     }
@@ -185,94 +185,151 @@
       font-size: 0.5rem;
       color: var(--green);
     }
+
+    .btn-button {
+      display: inline-block; /* Chuyển từ block sang inline-block */
+      margin-bottom: 1rem;
+      margin-left: 1rem;
+      text-align: center;
+      border: none;
+      background-color: #b1d0f9;
+      border-radius: 3px;
+      cursor: pointer;
+      padding: 10px;
+    }
+
+    .btn-button:hover {
+      background-color: #325f9a;
+      color: #fff;
+    }
+
+    .mt-extra {
+      margin-top: 100px; /* Điều chỉnh giá trị theo ý muốn */
+    }
+    
+    .btn-schedule a {
+      color: #000;
+      background-color: #b1d0f9;
+      padding: 4px;
+      border-radius: 3px;
+  
+    }
+
+    .btn-schedule a:hover {
+      background-color: #325f9a;
+      color: #fff;
+    }
+
+    .btn-schedule:hover {
+      color:#fff;
+      background-color: #b1d0f9;
+    }
+
+    
+
+
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-light">
-    <div class="container-fluid">
-      <!-- Navbar content here -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-          <a class="nav-link" href="{% url '' %}">Home</a>
-          <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-          <!--<a class="nav-link active" aria-current="page" href="{% url 'profile' %}">Profile</a>
-          <a class="nav-link" href="{% url 'user-logout' %}"> Logout</a>-->
-        </div>
-        <div class="search-bar ms-auto">
-          <!-- Dropdown starts -->
-          <div class="dropdown">
-            <div class="dropdown-text">
-              <span id="selected-item">Filters</span>
-              <i class="fa-solid fa-chevron-down"></i>
-            </div>
-            <ul class="dropdown-list">
-              <li class="dropdown-list-item"><a href="?filter_type=username">Username</a></li>
-              <li class="dropdown-list-item"><a href="?filter_type=school">School</a></li>
-              <li class="dropdown-list-item"><a href="?filter_type=age">Age</a></li>
-            </ul>
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <div class="container-fluid">
+        <!-- Navbar content here -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+            <a class="nav-link" href="{% url '' %}">Home</a>
+            <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+            <!--<a class="nav-link active" aria-current="page" href="{% url 'profile' %}">Profile</a>
+            <a class="nav-link" href="{% url 'user-logout' %}"> Logout</a>-->
           </div>
-          <!-- Dropdown ends -->
-          <form class="d-flex" method="GET" action="{% url 'search' %}">
-            <input type="text" id="search-input" class="search-box" placeholder="Search Anything.." name="query" value="{{ query }}">
-            <input type="hidden" name="filter_type" id="filter_type" value="{{ filter_type }}">
-            <button class="btn custom-search-button" type="submit">
-              <i class="fas fa-search"></i>
-            </button>
-          </form>
-          <!-- Profile Dropdown -->
-          <div class="profile-dropdown">
-            <div class="profile-dropdown-text">
-                <div class="profile-img">
-                    <i class="fa-solid fa-circle"></i>
-                </div>
+          <div class="search-bar ms-auto">
+            <!-- Dropdown starts -->
+            <div class="dropdown">
+              <div class="dropdown-text">
+                <span id="selected-item">Filters</span>
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+              <ul class="dropdown-list">
+                <li class="dropdown-list-item"><a href="?filter_type=username">Username</a></li>
+                <li class="dropdown-list-item"><a href="?filter_type=school">School</a></li>
+                <li class="dropdown-list-item"><a href="?filter_type=age">Age</a></li>
+              </ul>
+            </div>
+            <!-- Dropdown ends -->
+            <form class="d-flex" method="GET" action="{% url 'search' %}">
+              <input type="text" id="search-input" class="search-box" placeholder="Search Anything.." name="query" value="{{ query }}">
+              <input type="hidden" name="filter_type" id="filter_type" value="{{ filter_type }}">
+              <button class="btn custom-search-button" type="submit">
+                <i class="fas fa-search"></i>
+              </button>
+            </form>
+            <!-- Profile Dropdown -->
+            <div class="profile-dropdown">
+              <div class="profile-dropdown-text">
+                  <div class="profile-img">
+                      <i class="fa-solid fa-circle"></i>
+                  </div>
 
-                <span id="selected-item">{{ user.username }}
-                    <i class="fa-solid fa-angle-down"></i>
-                </span>
-            </div>
-            <ul class="profile-dropdown-list">
-                <li class="profile-dropdown-list-item"><a href="{% url 'profile' %}"><i class="fa-regular fa-user"></i> Profile</a></li>
-                <li class="profile-dropdown-list-item"><a href="{% url 'schedule_list' %}"><i class="fa-regular fa-calendar"></i> Schedule</a></li>
-                <li class="profile-dropdown-list-item"><a href="{% url 'user-logout' %}"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
-            </ul>
-        </div>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <section class="vh-100" style="background-color: #ffffff;">
-    <div class="container py-5 h-100">
-      <div class="row d-flex justify-content-center align-items-center h-100">
-        <div class="col-md-4 gradient-custom text-center text-black" style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
-          <!-- Placeholder for user image -->
-          <div class="mb-5">
-            <img src="https://i.pinimg.com/736x/06/37/bc/0637bcb75d693d9668e388c933bbe572.jpg" alt="Avatar" class="img-fluid my-5" style="width: 250px;" />
-            <h5>User ID: {{ user_id }}</h5>
-            <h5>{{ u_form.instance.username }}</h5>
+                  <span id="selected-item">{{ user.username }}
+                      <i class="fa-solid fa-angle-down"></i>
+                  </span>
+              </div>
+              <ul class="profile-dropdown-list">
+                  <li class="profile-dropdown-list-item"><a href="{% url 'profile' %}"><i class="fa-regular fa-user"></i> Profile</a></li>
+                  <li class="profile-dropdown-list-item"><a href="{% url 'schedule_list' %}"><i class="fa-regular fa-calendar"></i> Schedule</a></li>
+                  <li class="profile-dropdown-list-item"><a href="{% url 'user-logout' %}"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
+              </ul>
           </div>
-          <!--<i class="far fa-edit mb-5"></i>-->
-        </div>
-        <div class="col col-lg-6 mb-4 mb-lg-0">
-          <div class="card mb-3" style="border-radius: .5rem;">
-            <div class="card-body p-4">
-              <h5>Your Profile</h5>
-              <hr class="mt-0 mb-4">
-              <form method="post">
-                {% csrf_token %}
-                {{ u_form.as_p }}
-                {{ p_form.as_p }}
-                <button type="submit" class="btn btn-primary">Update Profile</button>
-              </form>
-            </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
-  <!-- Bootstrap Bundle with Popper -->
+    </nav>
+
+    <div class="container py-9 py-lg-11 position-relative z-index-1">
+      <div class="row">
+          <div class="col-lg-5 mb-5 mb-lg-0">
+              <h3 class="mt-4 mb-4 text-dark aos-init aos-animate" data-aos="fade-up">My Schedule </h3>
+              <div class="newschedule">
+                  <a class="btn btn-button" href="{% url 'schedule_create' %}"><i class="fas fa-plus"></i> New Schedule</a>
+              </div>   
+              <div class="nav nav-pills flex-column aos-init aos-animate" id="myTab" role="tablist" data-aos="fade-up">
+                  {% for schedule in schedules %}
+                  <button class="btn btn-schedule px-4 text-start mb-3 {% if forloop.first %}active{% endif %}" id="d{{ forloop.counter }}-tab" data-bs-toggle="tab" data-bs-target="#day{{ forloop.counter }}" type="button" role="tab" aria-controls="day{{ forloop.counter }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">          
+                     <span class="d-block fs-5 fw-bold">
+                        {{ schedule.titles }}
+                        <a class="text-decoration-none" href="{% url 'schedule_delete' schedule.pk %}"><i class="fas fa-edit"></i></a>
+                        <a class="btn" href="{% url 'create_todolist' schedule.pk %}"><i class="fas fa-plus"></i> Add todolist</a>
+                      </span>
+                      <p class="mb-0">{{ schedule.description }}</p>
+                      <span class="small"><p>{{ schedule.start_date }} - {{ schedule.end_date }}</p></span>
+                  </button>
+                  {% endfor %}
+              </div>
+            </div>
+            <div class="col-lg-7 col-xl-6">
+              <div data-aos="fade-up" class="tab-content aos-init aos-animate" id="myTabContent">
+                  {% for schedule in schedules %}
+                  <div class="tab-pane fade {% if forloop.first %}active show{% endif %}" id="day{{ forloop.counter }}" role="tabpanel" aria-labelledby="d{{ forloop.counter }}-tab">
+                      <ul class="pt-4 list-unstyled mb-0">
+                          {% for todo in schedule.todolist.all %}
+                          <li class="d-flex flex-column flex-md-row py-4">
+                              <span class="flex-shrink-0 width-13x me-md-4 d-block mb-3 mb-md-0 small text-muted">{{ todo.start_time }} - {{ todo.end_time }}</span>
+                              <div class="flex-grow-1 ps-4 border-start border-3">
+                                  <h4>{{ todo.titles }}</h4>
+                                  <p class="mb-0">{{ todo.job_type }}</p>
+                              </div>
+                          </li>
+                          {% endfor %}
+                      </ul>
+                  </div>
+                  {% endfor %}
+              </div>
+          </div>
+      </div>
+  </div>
+    <!-- Bootstrap Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

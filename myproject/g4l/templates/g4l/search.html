@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Profile</title>
+  <title>Search Results</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
@@ -16,7 +16,7 @@
 
     .navbar {
       background-color: #e99a76;
-      padding: 15px 0;
+      padding: 17px 0;
       position: none;
       width: 100%;
       top: 0;
@@ -123,6 +123,74 @@
       margin-left: 0.5rem;
     }
 
+    .profile-dropdown {
+            position: relative;
+            width: fit-content;
+            border-radius: 20px;
+            background-color: #9c3d11;
+            cursor: pointer;
+            margin-left: 30px; /* Added margin for better spacing */
+        }
+
+        .profile-dropdown-list {
+            display: block;
+            position: absolute;
+            top: 2.5rem;
+            left: 0;
+            width: 100%;
+            border-radius: 3px;
+            max-height: 0;
+            overflow: hidden;
+            background-color: #fcf8f8;
+            transition: max-height 0.5s;
+        }
+
+        .profile-dropdown-text {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-right: 2.5rem;
+            font-size: 1rem;
+            width: 170px;
+            color: #fff;
+            transition: box-shadow 0.2s ease-in, background-color 0.2s ease-in, border 0.3s;
+        }
+
+        .profile-dropdown-text:hover {
+            background-color: #f3b799;
+            color: #000;
+            border-radius: 20px;
+        }
+
+        .profile-dropdown-list-item {
+            font-size: 0.9rem;
+            border-radius: 3px;
+            padding: 0.5rem 0.5rem 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.3s ease, margin-left 0.2s ease;
+        }
+
+        .profile-dropdown-list-item:hover {
+            margin-left: 0.5rem;
+        }
+
+        .profile-img {
+            position: relative;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background: url('https://i.pinimg.com/736x/06/37/bc/0637bcb75d693d9668e388c933bbe572.jpg');
+            background-size: cover;
+        }
+
+        .profile-img i {
+            position: absolute;
+            right: 0;
+            bottom: 0.3rem;
+            font-size: 0.5rem;
+            color: var(--green);
+        }
+
   </style>
 </head>
 <body>
@@ -136,15 +204,15 @@
         <div class="navbar-nav">
           <a class="nav-link" href="{% url '' %}">Home</a>
           <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-          <a class="nav-link" href="{% url 'profile' %}">Profile</a>
-          <a class="nav-link" href="{% url 'user-logout' %}"> Logout here </a>
+          <!--<a class="nav-link" href="{% url 'profile' %}">Profile</a>
+          <a class="nav-link" href="{% url 'user-logout' %}"> Logout</a>-->
           <a class="nav-link active" aria-current="page" href="{% url 'search' %}"></a>
         </div>
         <div class="search-bar ms-auto">
           <!-- Dropdown starts -->
           <div class="dropdown">
             <div class="dropdown-text">
-              <span id="selected-item">Filters</span>
+              <span id="selected-item">{{ filter_type|default:"Filters" }}</span>
               <i class="fa-solid fa-chevron-down"></i>
             </div>
             <ul class="dropdown-list">
@@ -154,13 +222,31 @@
             </ul>
           </div>
           <!-- Dropdown ends -->
-          <form class="d-flex">
-            <input type="text" id="search-input" class="search-box" placeholder="Search Anything.." name="query">
-            <input type="hidden" name="filter_type" value="{{ filter_type }}">
+          <form class="d-flex" method="GET" action="{% url 'search' %}">
+            <input type="text" id="search-input" class="search-box" placeholder="Search Anything.." name="query" value="{{ query }}">
+            <input type="hidden" name="filter_type" id="filter_type" value="{{ filter_type }}">
             <button class="btn custom-search-button" type="submit">
               <i class="fas fa-search"></i>
             </button>
           </form>
+
+          <!-- Profile Dropdown -->
+          <div class="profile-dropdown">
+            <div class="profile-dropdown-text">
+                <div class="profile-img">
+                    <i class="fa-solid fa-circle"></i>
+                </div>
+
+                <span id="selected-item">{{ user.username }}
+                    <i class="fa-solid fa-angle-down"></i>
+                </span>
+            </div>
+            <ul class="profile-dropdown-list">
+                <li class="profile-dropdown-list-item"><a href="{% url 'profile' %}"><i class="fa-regular fa-user"></i> Profile</a></li>
+                <li class="profile-dropdown-list-item"><a href="{% url 'schedule_list' %}"><i class="fa-regular fa-calendar"></i> Schedule</a></li>
+                <li class="profile-dropdown-list-item"><a href="{% url 'user-logout' %}"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
+            </ul>
+        </div>
         </div>
       </div>
     </div>
@@ -198,35 +284,72 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(document).ready(function() {
-      $('.dropdown-text').on('click', function() {
-        var dropdownList = $(this).siblings('.dropdown-list');
-        if (dropdownList.css('max-height') === '0px') {
-          dropdownList.css('max-height', '200px'); // Open dropdown
-        } else {
-          dropdownList.css('max-height', '0'); // Close dropdown
+        // Dropdown logic
+        $('.dropdown-text').on('click', function() {
+            var dropdownList = $(this).siblings('.dropdown-list');
+            var maxHeight = dropdownList.css('max-height');
+            if (maxHeight === '0px') {
+                dropdownList.css('max-height', '10rem');
+            } else {
+                dropdownList.css('max-height', '0');
+            }
+        });
+
+        $(document).on('click', function(event) {
+          if (!$(event.target).closest('.dropdown').length) {
+            $('.dropdown-list').css('max-height', '0');
+          }
+        });
+
+        $('.dropdown-list-item a').on('click', function(e) {
+            e.preventDefault();
+            const span = $('#selected-item');
+            const input = $('#search-input');
+            const filterType = $(this).attr('href').split('=')[1];
+
+            span.text($(this).text());
+            input.attr('placeholder', $(this).text() === "Everything" ? "Search Anything..." : "Search in " + $(this).text() + "...");
+
+            $('#filter_type').val(filterType);
+            $(this).closest('.dropdown-list').css('max-height', '0');
+        });
+
+        // Profile dropdown logic
+        $('.profile-dropdown-text').on('click', function() {
+            var $dropdownList = $(this).next('.profile-dropdown-list');
+            if ($dropdownList.css('max-height') === '0px') {
+                $dropdownList.css('max-height', $dropdownList.prop('scrollHeight') + 'px');
+            } else {
+                $dropdownList.css('max-height', '0');
+            }
+        });
+
+        $(document).on('click', function(event) {
+            if (!$(event.target).closest('.profile-dropdown').length) {
+                $('.profile-dropdown-list').css('max-height', '0');
+            }
+        });
+
+        // Retain filter and query values after search
+        const query = "{{ query }}";
+        const filterType = "{{ filter_type }}";
+        if (query) {
+            $('#search-input').val(query);
         }
-      });
-
-      // Update placeholder and title when clicking on a dropdown item
-      $('.dropdown-list-item a').on('click', function(e) {
-        e.preventDefault();
-        const span = $('#selected-item');
-        const input = $('#search-input');
-        const filterType = $(this).attr('href').split('=')[1]; // Get filter_type value from href
-
-        span.text($(this).text());
-        if ($(this).text() === "Everything") {
-          input.attr('placeholder', "Search Anything...");
-        } else {
-          input.attr('placeholder', "Search in " + $(this).text() + "...");
+        if (filterType) {
+            $('#filter_type').val(filterType);
+            $('#selected-item').text(filterType.charAt(0).toUpperCase() + filterType.slice(1));
+            if (filterType === "everything") {
+                $('#search-input').attr('placeholder', "Search Anything...");
+            } else {
+                $('#search-input').attr('placeholder', "Search in " + filterType.charAt(0).toUpperCase() + filterType.slice(1) + "...");
+            }
         }
-
-        // Update the hidden input value to submit with the form
-        $('#filter_type').val(filterType);
-      });
     });
-  </script>
+</script>
+
 </body>
 </html>

@@ -18,7 +18,7 @@
 
         .navbar {
             background-color: #d2abe2;
-            padding: 15px 0;
+            padding: 17px 0;
             position: none;
             width: 100%;
             top: 0;
@@ -39,22 +39,23 @@
         }
 
         .navbar-nav .nav-link {
-            font-size: 17px; /* Custom font size */
+            font-size: 17px;
         }
 
         .responsive-img {
-            max-width: 100%; /* Ensure the image doesn't exceed its container */
-            height: auto; /* Maintain aspect ratio */
+            max-width: 100%;
+            height: auto;
         }
 
         .content {
-            padding-top: 20px; /* increase padding for better visibility */
+            padding-top: 20px;
             text-align: center;
         }
 
         .search-bar {
             display: flex;
             align-items: center;
+            
         }
 
         .search-box {
@@ -62,20 +63,21 @@
             margin-left: 1px;
             border: 1px solid #ccc;
             border-radius: 3px;
+        
         }
 
         .custom-search-button {
-            background-color: #79388b; /* Màu nền */
-            color: white; /* Màu chữ */
-            border: none; /* Bỏ viền */
-            border-radius: 3px; /* Bo góc */
-            padding: 5px 12px; /* Padding */
-            transition: background-color 0.3s; /* Hiệu ứng chuyển đổi */
+            background-color: #79388b;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 12px;
+            transition: background-color 0.3s;
         }
 
         .custom-search-button:hover {
-            background-color: #da60ff; /* Màu nền khi hover */
-            color: #000; /* Màu chữ khi hover */
+            background-color: #da60ff;
+            color: #000;
         }
 
         .dropdown {
@@ -124,6 +126,74 @@
         .dropdown-list-item:hover {
             margin-left: 0.5rem;
         }
+
+        .profile-dropdown {
+            position: relative;
+            width: fit-content;
+            border-radius: 20px;
+            background-color: #79388b;
+            cursor: pointer;
+            margin-left: 30px; /* Added margin for better spacing */
+        }
+
+        .profile-dropdown-list {
+            display: block;
+            position: absolute;
+            top: 2.5rem;
+            left: 0;
+            width: 100%;
+            border-radius: 3px;
+            max-height: 0;
+            overflow: hidden;
+            background-color: #fcf8f8;
+            transition: max-height 0.5s;
+        }
+
+        .profile-dropdown-text {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-right: 2.5rem;
+            font-size: 1rem;
+            width: 170px;
+            color: #fff;
+            transition: box-shadow 0.2s ease-in, background-color 0.2s ease-in, border 0.3s;
+        }
+
+        .profile-dropdown-text:hover {
+            background-color: #da60ff;
+            color: #000;
+            border-radius: 20px;
+        }
+
+        .profile-dropdown-list-item {
+            font-size: 0.9rem;
+            border-radius: 3px;
+            padding: 0.5rem 0.5rem 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.3s ease, margin-left 0.2s ease;
+        }
+
+        .profile-dropdown-list-item:hover {
+            margin-left: 0.5rem;
+        }
+
+        .profile-img {
+            position: relative;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background: url('https://i.pinimg.com/736x/06/37/bc/0637bcb75d693d9668e388c933bbe572.jpg');
+            background-size: cover;
+        }
+
+        .profile-img i {
+            position: absolute;
+            right: 0;
+            bottom: 0.3rem;
+            font-size: 0.5rem;
+            color: var(--green);
+        }
     </style>
 </head>
 <body>
@@ -136,9 +206,10 @@
                 <div class="navbar-nav">
                     <a class="nav-link active" aria-current="page" href="{% url '' %}">Home</a>
                     <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-                    <a class="nav-link" href="{% url 'profile' %}">Profile</a>
-                    <a class="nav-link" href="{% url 'user-logout' %}">Logout here</a>
+                    <a class="nav-link" href="{% url 'mylogin' %}">Login</a>
+                    <a class="nav-link" href="{% url 'register' %}">Register</a>
                 </div>
+
                 <div class="search-bar ms-auto">
                     <!-- Dropdown starts -->
                     <div class="dropdown">
@@ -161,6 +232,24 @@
                             <i class="fas fa-search"></i>
                         </button>
                     </form>
+                   
+                    <!-- Profile Dropdown -->
+                    <div class="profile-dropdown">
+                        <div class="profile-dropdown-text">
+                            <div class="profile-img">
+                                <i class="fa-solid fa-circle"></i>
+                            </div>
+
+                            <span id="selected-item">{{ user.username }}
+                                <i class="fa-solid fa-angle-down"></i>
+                            </span>
+                        </div>
+                        <ul class="profile-dropdown-list">
+                            <li class="profile-dropdown-list-item"><a href="{% url 'profile' %}"><i class="fa-regular fa-user"></i> Profile</a></li>
+                            <li class="profile-dropdown-list-item"><a href="{% url 'schedule_list' %}"><i class="fa-regular fa-calendar"></i> Schedule</a></li>
+                            <li class="profile-dropdown-list-item"><a href="{% url 'user-logout' %}"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -179,32 +268,67 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
+            // Dropdown logic
             $('.dropdown-text').on('click', function() {
                 var dropdownList = $(this).siblings('.dropdown-list');
-                if (dropdownList.css('max-height') === '0px') {
-                    dropdownList.css('max-height', '200px'); // Open dropdown
+                var maxHeight = dropdownList.css('max-height');
+                if (maxHeight === '0px') {
+                    dropdownList.css('max-height', '10rem');// Set a desired max-height
                 } else {
-                    dropdownList.css('max-height', '0'); // Close dropdown
+                    dropdownList.css('max-height', '0');
                 }
             });
 
-            // Update placeholder and title when clicking dropdown item
+            $(document).on('click', function(event) {
+                if (!$(event.target).closest('.dropdown').length) {
+                  $('.dropdown-list').css('max-height', '0');
+                }
+            });
+
             $('.dropdown-list-item a').on('click', function(e) {
                 e.preventDefault();
                 const span = $('#selected-item');
                 const input = $('#search-input');
-                const filterType = $(this).attr('href').split('=')[1]; // Get filter_type from href
+                const filterType = $(this).attr('href').split('=')[1];// Get filter_type value from href
 
                 span.text($(this).text());
-                if ($(this).text() === "") {
-                    input.attr('placeholder', "Search Anything...");
-                } else {
-                    input.attr('placeholder', "Search in " + $(this).text() + "...");
-                }
+                input.attr('placeholder', $(this).text() === "Everything" ? "Search Anything..." : "Search in " + $(this).text() + "...");
 
-                // Update hidden input value to submit with form
-                $('#filter_type').val(filterType);
+                $('#filter_type').val(filterType);// Set filter_type hidden input value
+                $(this).closest('.dropdown-list').css('max-height', '0'); // Close the dropdown
             });
+
+            // Profile dropdown logic
+            $('.profile-dropdown-text').on('click', function() {
+                var $dropdownList = $(this).next('.profile-dropdown-list');
+                if ($dropdownList.css('max-height') === '0px') {
+                    $dropdownList.css('max-height', $dropdownList.prop('scrollHeight') + 'px');
+                } else {
+                    $dropdownList.css('max-height', '0');
+                }
+            });
+
+            $(document).on('click', function(event) {
+                if (!$(event.target).closest('.profile-dropdown').length) {
+                    $('.profile-dropdown-list').css('max-height', '0');
+                }
+            });
+
+            // Retain filter and query values after search
+            const query = "{{ query }}";
+            const filterType = "{{ filter_type }}";
+            if (query) {
+                $('#search-input').val(query);
+            }
+            if (filterType) {
+                $('#filter_type').val(filterType);
+                $('#selected-item').text(filterType.charAt(0).toUpperCase() + filterType.slice(1));
+                if (filterType === "everything") {
+                    $('#search-input').attr('placeholder', "Search Anything...");
+                } else {
+                    $('#search-input').attr('placeholder', "Search in " + filterType.charAt(0).toUpperCase() + filterType.slice(1) + "...");
+                }
+            }
         });
     </script>
 </body>
