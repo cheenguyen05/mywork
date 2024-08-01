@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 # Create your models here.
 
@@ -22,19 +23,24 @@ class Schedule(models.Model):
     def __str__(self):
         return self.titles
 
+    def get_sorted_todos(self):
+        return self.todolist.all().order_by('start_time')
+
 class TodoList(models.Model):
     JOB_TYPE_CHOICES = [
-        ('daily', 'Hàng ngày'),
-        ('weekly', 'Ngày trong tuần'),
-        ('monthly', 'Ngày trong tháng'),
-        ('one_time', 'Làm trong ngày'),
+        ('Daily', 'Hàng ngày'),
+        ('Weekly', 'Ngày trong tuần'),
+        ('Monthly', 'Ngày trong tháng'),
+        ('One_time', 'Làm trong ngày'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     schedule = models.ForeignKey(Schedule, related_name='todolist', on_delete=models.CASCADE)
     titles = models.CharField(max_length=100)
     start_time = models.TimeField()
     end_time = models.TimeField()
-    job_type = models.CharField(max_length=10, choices=JOB_TYPE_CHOICES, default='one_time')
+    job_type = models.CharField(max_length=10, choices=JOB_TYPE_CHOICES, default='Daily')
+    completed = models.BooleanField(default=False)
+    completed_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.titles

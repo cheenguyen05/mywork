@@ -1,0 +1,16 @@
+<!-- schedule_update.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Schedule</title>
+</head>
+<body>
+    <h1>Update Schedule</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ suform.as_p }}
+        <button type="submit">Update</button>
+    </form>
+    <a href="{% url 'schedule_list' %}">Cancel</a>
+</body>
+</html>

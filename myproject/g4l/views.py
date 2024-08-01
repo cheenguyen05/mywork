@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Profile, Schedule, TodoList
 
 from django.db.models import Q
+from django.utils import timezone
 
 # - Authentication models and functions
  
@@ -100,32 +101,41 @@ def dashboard(request):
 #
 @login_required(login_url="mylogin")
 def profile(request, user_id=None):
-    # Nếu user_id không được cung cấp, sử dụng user đã đăng nhập
+    # Nếu không có ID trong URL, sử dụng ID của người dùng đã đăng nhập
     if user_id is None:
-        user = request.user
+        user_id = request.user.id
+
+    # Lấy đối tượng người dùng hoặc trả về lỗi 404 nếu không tìm thấy
+    user = get_object_or_404(User, id=user_id)
+
+    # Nếu người dùng không phải là người đang xem profile, chỉ cho phép xem thông tin
+    if user_id != request.user.id:
+        u_form = None
+        p_form = None
     else:
-        user = get_object_or_404(User, id=user_id)
+        # Chỉ cho phép cập nhật thông tin nếu xem profile của chính mình
+        if request.method == 'POST':
+            u_form = UserUpdateForm(request.POST, instance=user)
+            p_form = ProfileUpdateForm(request.POST, instance=user.profile)
 
-    if request.method == 'POST':
-        u_form = UserUpdateForm(request.POST, instance=user)
-        p_form = ProfileUpdateForm(request.POST, instance=user.profile)
-
-        if u_form.is_valid() and p_form.is_valid():
-            u_form.save()
-            p_form.save()
-            return redirect('profile', user_id=user.id)  # Redirect tới profile của người dùng
-
-    else:
-        u_form = UserUpdateForm(instance=user)
-        p_form = ProfileUpdateForm(instance=user.profile)
+            if u_form.is_valid() and p_form.is_valid():
+                u_form.save()
+                p_form.save()
+                return redirect('profile', user_id=user.id)
+        else:
+            u_form = UserUpdateForm(instance=user)
+            p_form = ProfileUpdateForm(instance=user.profile)
 
     context = {
         'u_form': u_form,
         'p_form': p_form,
-        'user_id': user.id,
+        'user': user,
+        'is_self': user_id == request.user.id,  # Xác định xem đây có phải là profile của chính người dùng không
+        'logged_in_user': request.user  # Đảm bảo rằng tên người dùng đăng nhập luôn được truyền
     }
 
     return render(request, 'g4l/profile.html', context=context)
+
 
 
 #
@@ -166,20 +176,20 @@ def search_view(request):
     return render(request, 'g4l/search.html', context=context)
 
 
-
 #
 # CREATE SCHEDULE
 #
-@login_required
+@login_required(login_url="mylogin")
 def schedule_list(request):
     schedules = Schedule.objects.filter(user=request.user)
     return render(request, 'g4l/schedule_list.html', {'schedules': schedules})
-#@login_required
-#def schedule_detail(request, pk):
+
+@login_required(login_url="mylogin")
+def schedule_detail(request, pk):
     schedule = get_object_or_404(Schedule, pk=pk)
     return render(request, 'g4l/schedule_detail.html', {'schedule': schedule})
 
-@login_required
+@login_required(login_url="mylogin")
 def schedule_create(request):
     form = ScheduleForm()
 
@@ -197,15 +207,24 @@ def schedule_create(request):
 
 def schedule_delete(request, pk):
     schedule = get_object_or_404(Schedule, pk=pk)
-    if request.method == "POST":
+    if request.method == 'POST':
         schedule.delete()
         return redirect('schedule_list')
-    return render(request, 'g4l/schedule_confirm_delete.html', {'schedule': schedule})
+    return redirect('schedule_list')
+
+def schedule_update(request, pk):
+    schedule = get_object_or_404(Schedule, pk=pk)
+    if request.method == 'POST':
+        form = ScheduleForm(request.POST, instance=schedule)
+        if form.is_valid():
+            form.save()
+            return redirect('schedule_list')
+    return redirect('schedule_list')
 
 #
 # TODOLIST
 #
-@login_required
+@login_required(login_url="mylogin")
 def create_todolist(request, schedule_id):
     schedule = get_object_or_404(Schedule, id=schedule_id, user=request.user)
 
@@ -220,14 +239,17 @@ def create_todolist(request, schedule_id):
     else:
         form = TodoListForm()
 
+    sorted_todos = schedule.get_sorted_todos()
+
     context = {
         'createform':form,
-        'schedule': schedule
+        'schedule': schedule,
+        'sorted_todos': sorted_todos
     }
 
     return render(request, 'g4l/todolist_form.html', context=context)
 
-
+@login_required(login_url="mylogin")
 def todolist_delete(request, pk):
     if request.method == "POST":
         todo = get_object_or_404(TodoList, pk=pk)
@@ -235,3 +257,15 @@ def todolist_delete(request, pk):
         return redirect('todolist')
     return render(request, 'g4l/todo_confirm_delete.html', {'todo': todo})
 
+@login_required(login_url="mylogin")
+def mark_todolist_complete(request):
+    if request.method == "POST":
+        todo_id = request.POST.get("todo_id")
+        todo = get_object_or_404(TodoList, id=todo_id, user=request.user)
+        todo.completed = not todo.completed
+        if todo.completed:
+            todo.completed_at = timezone.now()
+        else:
+            todo.completed_at = None
+        todo.save()
+    return redirect('schedule_list')

@@ -228,8 +228,7 @@
                 <div class="profile-img">
                     <i class="fa-solid fa-circle"></i>
                 </div>
-
-                <span id="selected-item">{{ user.username }}
+                <span id="selected-item">{{ logged_in_user.username }}
                     <i class="fa-solid fa-angle-down"></i>
                 </span>
             </div>
@@ -243,6 +242,7 @@
       </div>
     </div>
   </nav>
+  {% if is_self %}
   <section class="vh-100" style="background-color: #ffffff;">
     <div class="container py-5 h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
@@ -250,22 +250,45 @@
           <!-- Placeholder for user image -->
           <div class="mb-5">
             <img src="https://i.pinimg.com/736x/06/37/bc/0637bcb75d693d9668e388c933bbe572.jpg" alt="Avatar" class="img-fluid my-5" style="width: 250px;" />
-            <h5>User ID: {{ user_id }}</h5>
+            <h5>User ID: {{ user.id }}</h5>
             <h5>{{ u_form.instance.username }}</h5>
           </div>
           <!--<i class="far fa-edit mb-5"></i>-->
         </div>
         <div class="col col-lg-6 mb-4 mb-lg-0">
           <div class="card mb-3" style="border-radius: .5rem;">
-            <div class="card-body p-4">
+            <div class="card-body p-4">  
               <h5>Your Profile</h5>
               <hr class="mt-0 mb-4">
-              <form method="post">
-                {% csrf_token %}
-                {{ u_form.as_p }}
-                {{ p_form.as_p }}
-                <button type="submit" class="btn btn-primary">Update Profile</button>
-              </form>
+                  <form method="post">
+                    {% csrf_token %}
+                    {{ u_form.as_p }}
+                    {{ p_form.as_p }}
+                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                  </form>
+  {% else %}
+  <section class="vh-100" style="background-color: #ffffff;">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-md-4 gradient-custom text-center text-black" style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
+          <!-- Placeholder for user image -->
+          <div class="mb-5">
+            <img src="https://i.pinimg.com/736x/06/37/bc/0637bcb75d693d9668e388c933bbe572.jpg" alt="Avatar" class="img-fluid my-5" style="width: 250px;" />
+            <h5>User ID: {{ user.id }}</h5>
+            <h5>{{ user.username }}</h5>
+          </div>
+          <!--<i class="far fa-edit mb-5"></i>-->
+        </div>
+        <div class="col col-lg-6 mb-4 mb-lg-0">
+          <div class="card mb-3" style="border-radius: .5rem;">
+            <div class="card-body p-4">  
+              <h5>Profile của {{ user.username }}</h5>
+              <hr class="mt-0 mb-4">
+                  <p><strong>Username:</strong> {{ user.username }}</p>
+                  <p><strong>Email address:</strong> {{ user.email }}</p>
+                  <p><strong>School:</strong> {{ user.profile.school }}</p>
+                  <p><strong>Age:</strong> {{ user.profile.age }}</p>
+  {% endif %}
             </div>
           </div>
         </div>
@@ -340,6 +363,9 @@
             }
         }
     });
+
+
+
 </script>
 </body>
 </html>
