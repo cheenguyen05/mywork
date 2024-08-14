@@ -185,6 +185,16 @@
       font-size: 0.5rem;
       color: var(--green);
     }
+
+    .bt_update {
+      background-color: #ca7200;
+      color: #fff;
+    }
+
+    .bt_update:hover {
+      background-color: #f9e5c5;
+      color: #000;
+    }
   </style>
 </head>
 <body>
@@ -264,7 +274,7 @@
                     {% csrf_token %}
                     {{ u_form.as_p }}
                     {{ p_form.as_p }}
-                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                    <button type="submit" class="btn bt_update">Update Profile</button>
                   </form>
   {% else %}
   <section class="vh-100" style="background-color: #ffffff;">

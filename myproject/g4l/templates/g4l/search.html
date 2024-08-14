@@ -222,6 +222,7 @@
             </ul>
           </div>
           <!-- Dropdown ends -->
+          <!-- Search bar -->
           <form class="d-flex" method="GET" action="{% url 'search' %}">
             <input type="text" id="search-input" class="search-box" placeholder="Search Anything.." name="query" value="{{ query }}">
             <input type="hidden" name="filter_type" id="filter_type" value="{{ filter_type }}">

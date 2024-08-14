@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create TodoList</title>
+  <title>Task List</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
@@ -209,7 +209,7 @@
           <a class="nav-link" href="{% url '' %}">Home</a>
           <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
           <!--<a class="nav-link active" aria-current="page" href="{% url 'profile' %}">Profile</a>-->
-          <a class="nav-link" href="{% url 'schedule_detail' schedule.pk %}">Back to TodoList</a>
+          <a class="nav-link" href="{% url 'todolist_detail' todo.pk %}">Back to Task</a>
         </div>
         <div class="search-bar ms-auto">
           <!-- Dropdown starts -->
@@ -256,7 +256,7 @@
     
 
 
-    <h3 class="mt-4 mb-4 ps-4">Create TodoList</h3>
+    <h3 class="mt-4 mb-4 ps-4">Create Task</h3>
 
   <section class="vh-100">
     <div class="container">
@@ -264,11 +264,11 @@
         <div class="col col-lg-6 mb-4 mb-lg-0">
           <div class="card mb-3" style="border-radius: .5rem;">
             <div class="card-body p-4">
-              <h4>What to do</h4>
+              <h4>Your task</h4>
               <hr class="mt-0 mb-4">
               <form method="post">
                 {% csrf_token %}
-                {{ createform.as_p }}
+                {{ taskform.as_p }}
                 <button type="submit" class="btn bt_save">Save</button>
               </form>
             </div>
@@ -354,32 +354,6 @@
         }
     });
 
-    //select day of week/ day of month
-    function updateFields() {
-            var jobType = document.getElementById('id_job_type').value;
-            var daysOfWeekField = document.getElementById('id_days_of_week').parentElement;
-            var daysOfMonthField = document.getElementById('id_days_of_month').parentElement;
-            var specificDateField = document.getElementById('id_specific_date').parentElement;
-
-            daysOfWeekField.style.display = 'none';
-            daysOfMonthField.style.display = 'none';
-            specificDateField.style.display = 'none';
-
-            if (jobType === 'weekly') {
-                daysOfWeekField.style.display = 'block';
-            } else if (jobType === 'monthly') {
-                daysOfMonthField.style.display = 'block';
-            } else if (jobType === 'one_time') {
-                specificDateField.style.display = 'block';
-            } else if (jobType === 'daily') {
-                // Daily tasks might not need additional fields, so leave as is
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            updateFields();  // Initial field update based on default value
-            document.getElementById('id_job_type').addEventListener('change', updateFields);
-        });
   </script>
 </body>
 </html>
